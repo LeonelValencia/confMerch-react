@@ -1,8 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import initialState from "../initialState";
+
+const API = 'http://localhost:1337/api/products?populate=%2A';
 
 const useInitialState = () => {
     const [state, setState] = useState(initialState);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        // Create an scoped async function in the hook
+        const getData = async () => {
+            const response = await axios(API);
+            setProducts(response.data.data);
+          };
+      
+        getData();
+    }, []);
 
     const addToCart = payload => {
         setState({
@@ -30,18 +44,12 @@ const useInitialState = () => {
         })
     }
 
-    const addNewLocation = payload => {
-        setState({
-            ...state,
-            location: payload
-        })
-    }
     return {
         addToCart,
         removeFromCart,
         addToBuyer,
         addNewOrder,
-        addNewLocation,
+        products,
         state,
     }
 }
